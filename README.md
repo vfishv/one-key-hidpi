@@ -21,7 +21,7 @@ System Preferences
 1.Remote Mode: Run this script in Terminal
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/xzhih/one-key-hidpi/master/hidpi.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/mlch911/one-key-hidpi/master/hidpi.sh)"
 ```
 
 2.Local Mode: Download ZIP, decompressing it, and double click `hidpi.command` to run
@@ -44,31 +44,26 @@ There are two ways to close it. It is recommended to choose the first one
 
 ```bash
 ls /Volumes/
-```
+cd /Volumes/"Your System Disk Part"/System/Library/Displays/Contents/Resources/Overrides/HIDPI
 
-you can see all Disk.
-
-```bash
-cd /Volumes/"Your System Disk Part"/Users/
-
-ls
-```
-
-you can see user home directory.
-
-```bash
-cd "user name"
-
-./.hidpi-disable
+./disable
 ```
 
 2. 
 
-Remove all injected display's DisplayVendorID folder under `Library/Displays/Contents/Resources/Overrides`
+Remove your display's DisplayVendorID folder under `/System/Library/Displays/Contents/Resources/Overrides` , and move backup files
+
+Please use the single display to execute the following commands. If it is a laptop, turn off the internal monitor when turning off the HIDPI of the external monitor.
+
+In Terminal: 
 
 ```bash
 ls /Volumes/
-rm -rf /Volumes/"Your System Disk Part"/Library/Displays/Contents/Resources/Overrides
+cd /Volumes/"Your System Disk Part"/System/Library/Displays/Contents/Resources/Overrides
+EDID=($(ioreg -lw0 | grep -i "IODisplayEDID" | sed -e "/[^<]*</s///" -e "s/\>//"))
+Vid=($(echo $EDID | cut -c18-20))
+rm -rf ./DisplayVendorID-$Vid
+cp -r ./HIDPI/backup/* ./
 ```
 
 ## Inspired

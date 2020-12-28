@@ -23,7 +23,7 @@ macOS 的 DPI 机制和 Windows 下不一样，比如 1080p 的屏幕在 Windows
 1.远程模式: 在终端输入以下命令回车即可
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/xzhih/one-key-hidpi/master/hidpi.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/mlch911/one-key-hidpi/master/hidpi.sh)"
 ```
 
 2.本地模式: 下载项目解压,双击 `hidpi.command` 运行
@@ -38,42 +38,34 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/xzhih/one-key-hidpi/mast
 
 ### 恢复模式
 
-如果使用此脚本后，开机无法进入系统，请到 macos 恢复模式，打开终端
+如果使用此脚本后，开机无法进入系统，请到 macos 恢复模式中或使用 clover `-x` 安全模式进入系统，打开终端
 
 这里有两种方式进行关闭，建议选第一种
 
 1. 快捷恢复
     
-
 ```bash
 ls /Volumes/
-```
+cd /Volumes/你的系统盘/System/Library/Displays/Contents/Resources/Overrides/HIDPI
 
-你会看到你的系统盘
-
-```bash
-cd /Volumes/你的系统盘/Users/
-
-ls
-```
-
-你可以看到所有用户的家目录
-
-```bash
-cd 你的用户名
-
-./.hidpi-disable
+./disable
 ```
 
 2. 手动恢复
 
-使用终端删除 `Library/Displays/Contents/Resources/Overrides` 下删除所有通过外部注入的显示器配置文件夹
+使用终端删除 `/System/Library/Displays/Contents/Resources/Overrides` 下删除显示器 VendorID 对应的文件夹，并把 `HIDPI/backup` 文件夹中的备份复制出来。
+
+请使用单个显示器执行以下命令，笔记本关闭外接显示器的 HIDPI 时请关闭内置显示器
 
 具体命令如下：
 
 ```bash
 ls /Volumes/
-rm -rf /Volumes/你的系统盘/Library/Displays/Contents/Resources/Overrides
+cd /Volumes/你的系统盘/System/Library/Displays/Contents/Resources/Overrides
+EDID=($(ioreg -lw0 | grep -i "IODisplayEDID" | sed -e "/[^<]*</s///" -e "s/\>//"))
+Vid=($(echo $EDID | cut -c18-20))
+rm -rf ./DisplayVendorID-$Vid
+cp -r ./HIDPI/backup/* ./
 ```
 
 ## 从以下得到启发
